@@ -1678,15 +1678,7 @@ elif "Power BI" in page:
     "&actionBarEnabled=true"
     "&reportCopilotInEmbed=true")
     
-    st.markdown(
-    f"""
-    <iframe
-        src="{POWERBI_URL}"
-        width="100%"
-        height="900"
-        frameborder="0"
-        allowFullScreen="true">
-    </iframe>
+
     """,
     unsafe_allow_html=True)
     
