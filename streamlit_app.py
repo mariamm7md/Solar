@@ -1706,7 +1706,7 @@ elif "Power BI" in page:
             <ul style="color:var(--slate);font-size:.875rem;line-height:1.9;padding-left:18px;">
                 <li><strong>15 interactive dashboards</strong> covering solar potential, seasonality,
                     dust impact, agriculture, tourism, and construction feasibility</li>
-                <li>Data: <strong>217K weather records</strong> across 27 Egyptian governorates (1981–2025)</li>
+                <li>Data: <strong>217K weather records</strong> across 27 Egyptian governorates (2003–2024)</li>
                 <li>Fully filterable by <strong>Year, Region, Governorate, Season</strong></li>
                 <li>Includes <strong>Solar Site Score</strong> composite ranking model</li>
                 <li>Advanced DAX measures with <strong>TREATAS, RANKX, ALLSELECTED</strong></li>
