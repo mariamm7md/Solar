@@ -1548,7 +1548,7 @@ elif "Tableau" in page:
 # ═══════════════════════  PAGE: SSRS REPORTS  ════════════════════════════════
 # ──────────────────────────────────────────────────────────────────────────────
 elif "SSRS" in page:
-    SSRS_URL = "http://desktop-j6i6l02/ReportServer"   
+    SSRS_URL = "http://192.168.1.20/ReportServer"   
 
     st.markdown('<div class="sec-title">📄 SSRS Reports</div>', unsafe_allow_html=True)
     st.markdown('<div class="sec-ar">التقارير المرقّمة القابلة للطباعة — SQL Server Reporting Services</div>',
@@ -1598,10 +1598,10 @@ elif "SSRS" in page:
         with st.expander("📋 How to add your SSRS link"):
             st.code("""
 # In this file, find:
-SSRS_URL = "http://desktop-j6i6l02/ReportServer"
+SSRS_URL = "http://192.168.1.20/ReportServer"
 
 # Replace with your URL, e.g.:
-SSRS_URL = "http://desktop-j6i6l02/ReportServer"
+SSRS_URL = "http://192.168.1.20/ReportServer"
 
 # Save the file → Streamlit will auto-reload
             """, language="python")
