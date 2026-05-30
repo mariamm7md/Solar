@@ -482,7 +482,7 @@ def load_data() -> pd.DataFrame:
                     else ("Neutral" if s >= 55 else "Not Recommended"))
                 )
             return df
-    except Exception:
+      except Exception:
         pass
 
     # ── 2. Try SQL Server ────────────────────────────────────────────────────
