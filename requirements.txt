@@ -1,3 +1,10 @@
 streamlit
 pandas
+numpy
 plotly
+pyodbc
+python-dotenv
+sqlalchemy
+openpyxl
+folium
+streamlit-folium
