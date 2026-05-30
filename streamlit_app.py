@@ -1458,14 +1458,7 @@ elif "Rankings" in page:
 # ═══════════════════════  PAGE: POWER BI LIVE  ═══════════════════════════════
 # ──────────────────────────────────────────────────────────────────────────────
 elif "Power BI" in page:
-    PURL = (
-    "https://app.powerbi.com/reportEmbed"
-    "?reportId=3e07ad1b-b490-49b6-a06e-5ebdca80c69a"
-    "&autoAuth=true"
-    "&ctid=a2c31985-cc3b-4e19-8fa2-59fa488f0c27"
-    "&actionBarEnabled=true"
-    "&reportCopilotInEmbed=true"
-    )
+    PURL = "https://app.powerbi.com/reportEmbed?reportId=3e07ad1b-b490-49b6-a06e-5ebdca80c69a&autoAuth=true&ctid=a2c31985-cc3b-4e19-8fa2-59fa488f0c27&actionBarEnabled=true&reportCopilotInEmbed=true"
     st.markdown('<div class="sec-title">📡 Power BI Live Service</div>', unsafe_allow_html=True)
     st.markdown('<div class="sec-ar">تقارير Power BI التفاعلية المباشرة — 15 لوحة مدمجة</div>',
                 unsafe_allow_html=True)
