@@ -11,8 +11,8 @@
 ║    OPENAI_API_KEY = "sk-..."                                                 ║
 ║    SQL_SERVER     = "your-server.database.windows.net"                       ║
 ║    SQL_DATABASE   = "SolarIQ_DW"                                             ║
-║    SQL_USER       = "your_user"                                              ║
-║    SQL_PASSWORD   = "your_password"                                          ║
+║    SQL_USER       = "Sqladmin"                                              ║
+║    SQL_PASSWORD   = "Project123"                                          ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
 
