@@ -1086,10 +1086,19 @@ elif "Comparison" in page:
             max(0, (5-r.get("avg_aqi",3))*25),
         ]
         fig_r.add_trace(
-          go.Scatterpolar( r=vals + [vals[0]], theta=cats + [cats[0]], fill="toself", name=r ["governorate"], line=dict(
-             co1or=CLRS[i % len(CLRS)], width=3),
-          fillcolor="rgba(244, 166, 42, 0.10)"))
-    
+         go.Scatterpolar(
+          r=vals + [vals[0]],
+          theta=cats + [cats[0]],
+          fill="toself",
+          name=r["governorate"],
+          line=dict(
+            color=CLRS[i % len(CLRS)],
+            width=3
+        ),
+        fillcolor="rgba(244,166,42,0.10)"
+      )
+    )
+        
     fig_r.update_layout(
         polar=dict(radialaxis=dict(visible=True,range=[0,100],tickfont=dict(size=9,color=P["text2"])),
                    bgcolor=P["card_bg"]),
