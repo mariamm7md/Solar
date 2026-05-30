@@ -1598,10 +1598,10 @@ elif "SSRS" in page:
         with st.expander("📋 How to add your SSRS link"):
             st.code("""
 # In this file, find:
-SSRS_URL = ""
+SSRS_URL = "http://localhost/ReportServer"
 
 # Replace with your URL, e.g.:
-SSRS_URL = "https://your-server/Reports/report/SolarIQ/ExecutiveSummary"
+SSRS_URL = "http://localhost/ReportServer"
 
 # Save the file → Streamlit will auto-reload
             """, language="python")
