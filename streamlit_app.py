@@ -488,7 +488,7 @@ def load_data() -> pd.DataFrame:
     # ── 2. Try SQL Server ────────────────────────────────────────────────────
    
     if SQL_SERVER and SQL_USER and SQL_PASSWORD:
-    try:
+     try:
         import pyodbc
 
         conn_str = (
