@@ -1671,9 +1671,25 @@ elif "Power BI" in page:
     )
 
     POWERBI_URL = (
-        "https://app.powerbi.com/view"
-        "?r=eyJrIjoiNzExOWU4ZmYtYWZlYS00NmIzLTk2ZDEtYTcwZDc2OWM0ZDA2IiwidCI6IjBmODNlYWRhLTJlYmYtNGYwOS1hYjUwLWM4ZjFlN2YyMDAzNyIsImMiOjh9"
-    )
+    "https://app.powerbi.com/reportEmbed"
+    "?reportId=3e07ad1b-b490-49b6-a06e-5ebdca80c69a"
+    "&autoAuth=true"
+    "&ctid=a2c31985-cc3b-4e19-8fa2-59fa488f0c27"
+    "&actionBarEnabled=true"
+    "&reportCopilotInEmbed=true")
+    
+    st.markdown(
+    f"""
+    <iframe
+        src="{POWERBI_URL}"
+        width="100%"
+        height="900"
+        frameborder="0"
+        allowFullScreen="true">
+    </iframe>
+    """,
+    unsafe_allow_html=True)
+    
 
     # Toolbar mock
     st.markdown(f"""
