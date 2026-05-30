@@ -1090,7 +1090,7 @@ elif "Comparison" in page:
           r=vals + [vals[0]],
           theta=cats + [cats[0]],
           fill="toself",
-          name=r["governorate"],
+          name=r["Governorate_Name"],
           line=dict(
             color=CLRS[i % len(CLRS)],
             width=3
