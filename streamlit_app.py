@@ -486,33 +486,66 @@ def load_data() -> pd.DataFrame:
         pass
 
     # ── 2. Try SQL Server ────────────────────────────────────────────────────
+   
     if SQL_SERVER and SQL_USER and SQL_PASSWORD:
-        try:
-            import pyodbc
-            conn_str = (
-                f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-                f"SERVER={SQL_SERVER};DATABASE={SQL_DATABASE};"
-                f"UID={SQL_USER};PWD={SQL_PASSWORD}"
+    try:
+        import pyodbc
+
+        conn_str = (
+            f"DRIVER={{ODBC Driver 17 for SQL Server}};"
+            f"SERVER={SQL_SERVER};"
+            f"DATABASE=SolarIQ_DW;"
+            f"UID={SQL_USER};"
+            f"PWD={SQL_PASSWORD};"
+            f"Encrypt=yes;"
+            f"TrustServerCertificate=yes;"
+            f"Connection Timeout=30;"
+        )
+
+        with pyodbc.connect(conn_str) as conn:
+
+            query = """
+            SELECT
+                s.governorate_name AS governorate,
+                g.region,
+                g.latitude AS lat,
+                g.longitude AS lon,
+
+                s.solar_site_score,
+
+                s.avg_solar_radiation,
+                s.avg_clearness_index AS clearness_index,
+
+                s.avg_temp_max,
+                s.avg_wind_speed,
+                s.avg_humidity,
+
+                s.avg_aqi,
+
+                s.grade,
+                s.rank_national AS rank,
+                s.investment_recommendation AS investment_rec
+
+            FROM gold.SolarSiteScore s
+            INNER JOIN dim.Governorate g
+                ON s.governorate_key = g.governorate_key
+
+            WHERE s.calculation_date =
+            (
+                SELECT MAX(calculation_date)
+                FROM gold.SolarSiteScore
             )
-            with pyodbc.connect(conn_str, timeout=10) as conn:
-                query = """
-                    SELECT s.governorate_name AS governorate,
-                           g.region, g.latitude AS lat, g.longitude AS lon,
-                           s.solar_site_score, s.avg_solar_radiation,
-                           s.avg_clearness_index AS clearness_index,
-                           s.avg_temp_max, s.avg_wind_speed,
-                           s.avg_humidity, s.avg_aqi,
-                           s.grade, s.rank_national AS rank,
-                           s.investment_recommendation AS investment_rec
-                    FROM gold.SolarSiteScore s
-                    JOIN dim.Governorate g ON s.governorate_key = g.governorate_key
-                    WHERE s.calculation_date = (SELECT MAX(calculation_date) FROM gold.SolarSiteScore)
-                    ORDER BY s.rank_national
-                """
-                df = pd.read_sql(query, conn)
-                return df
-        except Exception:
-            pass
+
+            ORDER BY s.rank_national
+            """
+
+            df = pd.read_sql(query, conn)
+
+            return df
+
+    except Exception as e:
+        st.error(f"Database Connection Error: {str(e)}")
+        return pd.DataFrame()
 
     # ── 3. Synthetic fallback ────────────────────────────────────────────────
     return _build_fallback_df()
@@ -931,93 +964,243 @@ elif "Map" in page:
 # PAGE: COMPARISON
 # ═════════════════════════════════════════════════════════════════════════════
 elif "Comparison" in page:
-    st.markdown('<div class="section-title">📊 Governorate Comparison Tool</div>',
-                unsafe_allow_html=True)
-    st.markdown('<div class="section-sub arabic-sub">مقارنة تفصيلية بين المحافظات بالرسم الراداري</div>',
-                unsafe_allow_html=True)
+
+    st.markdown(
+        '<div class="section-title">📊 Governorate Comparison Tool</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="section-sub arabic-sub">مقارنة تفصيلية بين المحافظات بالرسم الراداري</div>',
+        unsafe_allow_html=True
+    )
 
     gov_list = sorted(scores_df["governorate"].tolist())
+
     c1, c2 = st.columns(2)
-    gov_a = c1.selectbox("Governorate A", gov_list, index=0)
-    gov_b = c2.selectbox("Governorate B", gov_list, index=26)
+
+    gov_a = c1.selectbox(
+        "Governorate A",
+        gov_list,
+        index=0
+    )
+
+    gov_b = c2.selectbox(
+        "Governorate B",
+        gov_list,
+        index=len(gov_list) - 1
+    )
+
     extra = st.multiselect(
         "Add more (up to 5):",
         [g for g in gov_list if g not in [gov_a, gov_b]],
-        max_selections=5,
+        max_selections=5
     )
-    all_govs   = [gov_a, gov_b] + extra
-    compare_df = scores_df[scores_df["governorate"].isin(all_govs)]
 
-    # Radar chart
-    cats = ["Solar\nRadiation","Clearness\nIndex","Temp\nScore",
-            "Wind\nCooling","Humidity\nScore","Air\nQuality"]
-    clrs = [COLORS["gold"], COLORS["sky"], COLORS["green"],
-            "#A855F7","#F43F5E","#14B8A6","#F97316"]
+    all_govs = [gov_a, gov_b] + extra
+
+    compare_df = scores_df[
+        scores_df["governorate"].isin(all_govs)
+    ]
+
+    # ═════════════════════════════════════════════
+    # Radar Chart
+    # ═════════════════════════════════════════════
+
+    def hex_to_rgba(hex_color, alpha=0.08):
+        hex_color = hex_color.lstrip("#")
+
+        r = int(hex_color[0:2], 16)
+        g = int(hex_color[2:4], 16)
+        b = int(hex_color[4:6], 16)
+
+        return f"rgba({r},{g},{b},{alpha})"
+
+    cats = [
+        "Solar\nRadiation",
+        "Clearness\nIndex",
+        "Temp\nScore",
+        "Wind\nCooling",
+        "Humidity\nScore",
+        "Air\nQuality"
+    ]
+
+    clrs = [
+        COLORS["gold"],
+        COLORS["sky"],
+        COLORS["green"],
+        "#A855F7",
+        "#F43F5E",
+        "#14B8A6",
+        "#F97316"
+    ]
 
     fig_rad = go.Figure()
+
     for i, (_, row) in enumerate(compare_df.iterrows()):
+
         vals = [
-            row["avg_solar_radiation"] / 7.0 * 100,
+            (row["avg_solar_radiation"] / 7.0) * 100,
             row["clearness_index"] * 100,
-            max(0, 100 - (row["avg_temp_max"] - 25) * 2),
-            min(100, row["avg_wind_speed"] * 15),
-            max(0, 100 - row["avg_humidity"]),
-            max(0, (5 - row["avg_aqi"]) * 25),
+
+            max(
+                0,
+                100 - ((row["avg_temp_max"] - 25) * 2)
+            ),
+
+            min(
+                100,
+                row["avg_wind_speed"] * 15
+            ),
+
+            max(
+                0,
+                100 - row["avg_humidity"]
+            ),
+
+            max(
+                0,
+                min(
+                    100,
+                    (5 - row["avg_aqi"]) * 25
+                )
+            )
         ]
-        vals = [max(0, min(100, v)) for v in vals]
-        fig_rad.add_trace(go.Scatterpolar(
-            r=vals + [vals[0]],
-            theta=cats + [cats[0]],
-            fill="toself",
-            name=row["governorate"],
-            line_color=clrs[i % len(clrs)],
-            fillcolor=clrs[i % len(clrs)].replace("#","rgba(") + ",0.08)",
-        ))
+
+        vals = [
+            max(0, min(100, v))
+            for v in vals
+        ]
+
+        fig_rad.add_trace(
+            go.Scatterpolar(
+                r=vals + [vals[0]],
+                theta=cats + [cats[0]],
+                fill="toself",
+                name=row["governorate"],
+
+                line=dict(
+                    color=clrs[i % len(clrs)],
+                    width=3
+                ),
+
+                fillcolor=hex_to_rgba(
+                    clrs[i % len(clrs)],
+                    0.08
+                ),
+
+                opacity=0.8
+            )
+        )
+
     fig_rad.update_layout(
         polar=dict(
-            radialaxis=dict(visible=True, range=[0,100], tickfont=dict(size=9)),
-            bgcolor="rgba(244,247,250,0.5)",
+            radialaxis=dict(
+                visible=True,
+                range=[0, 100],
+                tickfont=dict(size=9)
+            ),
+            bgcolor="rgba(244,247,250,0.5)"
         ),
-        paper_bgcolor="rgba(0,0,0,0)",
-        height=460,
-        title="Factor Comparison (Radar Chart)",
-        font=dict(family="Plus Jakarta Sans"),
-        showlegend=True,
-    )
-    st.plotly_chart(fig_rad, use_container_width=True)
 
-    # Score bar
+        paper_bgcolor="rgba(0,0,0,0)",
+
+        height=460,
+
+        title={
+            "text": "Factor Comparison (Radar Chart)",
+            "x": 0.5
+        },
+
+        font=dict(
+            family="Plus Jakarta Sans"
+        ),
+
+        showlegend=True,
+
+        legend=dict(
+            orientation="h",
+            y=-0.2
+        )
+    )
+
+    st.plotly_chart(
+        fig_rad,
+        width="stretch"
+    )
+
+    # ═════════════════════════════════════════════
+    # Score Bar Chart
+    # ═════════════════════════════════════════════
+
     fig_bar = px.bar(
         compare_df,
-        x="governorate", y="solar_site_score",
+        x="governorate",
+        y="solar_site_score",
         color="governorate",
         color_discrete_sequence=clrs,
         title="Solar Site Score Comparison",
-        text="solar_site_score",
+        text="solar_site_score"
     )
-    fig_bar.update_traces(texttemplate="%{text:.1f}", textposition="outside")
+
+    fig_bar.update_traces(
+        texttemplate="%{text:.1f}",
+        textposition="outside"
+    )
+
     apply_theme(fig_bar, 340)
-    fig_bar.update_layout(showlegend=False, yaxis=dict(range=[0, 105]))
-    st.plotly_chart(fig_bar, use_container_width=True)
 
-    # Metrics table
+    fig_bar.update_layout(
+        showlegend=False,
+        yaxis=dict(range=[0, 105])
+    )
+
+    st.plotly_chart(
+        fig_bar,
+        width="stretch"
+    )
+
+    # ═════════════════════════════════════════════
+    # Detailed Table
+    # ═════════════════════════════════════════════
+
     st.markdown("### Detailed Metrics")
-    tbl = {"Metric": [
-        "Solar Score","Grade","Rank",
-        "Radiation (kWh/m²/day)","Clearness Index",
-        "Avg Max Temp (°C)","Wind (m/s)","Humidity (%)","AQI (1-5)","Recommendation",
-    ]}
-    for _, row in compare_df.iterrows():
-        tbl[row["governorate"]] = [
-            f"{row['solar_site_score']:.1f}/100", row["grade"], f"#{row['rank']}",
-            f"{row['avg_solar_radiation']:.2f}", f"{row['clearness_index']:.3f}",
-            f"{row['avg_temp_max']:.1f}°C", f"{row['avg_wind_speed']:.1f}",
-            f"{row['avg_humidity']:.1f}%", f"{row['avg_aqi']:.1f}",
-            row["investment_rec"],
+
+    tbl = {
+        "Metric": [
+            "Solar Score",
+            "Grade",
+            "Rank",
+            "Radiation (kWh/m²/day)",
+            "Clearness Index",
+            "Avg Max Temp (°C)",
+            "Wind (m/s)",
+            "Humidity (%)",
+            "AQI",
+            "Recommendation"
         ]
-    st.dataframe(pd.DataFrame(tbl), use_container_width=True, hide_index=True)
+    }
 
+    for _, row in compare_df.iterrows():
 
+        tbl[row["governorate"]] = [
+            f"{row['solar_site_score']:.1f}/100",
+            row["grade"],
+            f"#{row['rank']}",
+            f"{row['avg_solar_radiation']:.2f}",
+            f"{row['clearness_index']:.3f}",
+            f"{row['avg_temp_max']:.1f}°C",
+            f"{row['avg_wind_speed']:.1f}",
+            f"{row['avg_humidity']:.1f}%",
+            f"{row['avg_aqi']:.1f}",
+            row["investment_rec"]
+        ]
+
+    st.dataframe(
+        pd.DataFrame(tbl),
+        use_container_width=True,
+        hide_index=True
+    )
 # ═════════════════════════════════════════════════════════════════════════════
 # PAGE: SEASONAL ANALYSIS
 # ═════════════════════════════════════════════════════════════════════════════
