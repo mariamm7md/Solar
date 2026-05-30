@@ -29,10 +29,18 @@ import os
 import json
 import time
 from datetime import datetime
-
 from dotenv import load_dotenv
- 
+
+
 load_dotenv()
+
+SQL_SERVER = os.getenv("SQL_SERVER")
+SQL_DATABASE = os.getenv("SQL_DATABASE")
+SQL_USER = os.getenv("SQL_USER")
+SQL_PASSWORD = os.getenv("SQL_PASSWORD")
+load_dotenv()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PAGE CONFIGURATION  ── Must be the VERY FIRST Streamlit call
 # ─────────────────────────────────────────────────────────────────────────────
