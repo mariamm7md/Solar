@@ -488,6 +488,7 @@ def load_data() -> pd.DataFrame:
     # ── 2. Try SQL Server ────────────────────────────────────────────────────
    
     if SQL_SERVER and SQL_USER and SQL_PASSWORD:
+    
      try:
         import pyodbc
 
@@ -543,7 +544,7 @@ def load_data() -> pd.DataFrame:
 
             return df
 
-    except Exception as e:
+     except Exception as e:
         st.error(f"Database Connection Error: {str(e)}")
         return pd.DataFrame()
 
