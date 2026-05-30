@@ -1678,10 +1678,7 @@ elif "Power BI" in page:
     "&actionBarEnabled=true"
     "&reportCopilotInEmbed=true")
     
-
-    """,
-    unsafe_allow_html=True)
-    
+   
 
     # Toolbar mock
     st.markdown(f"""
