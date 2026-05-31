@@ -867,7 +867,7 @@ with st.sidebar:
     st.markdown(
         f"""<div style="font-size:.67rem;color:rgba(255,255,255,.28);text-align:center;line-height:1.9;">
         NASA POWER + Open-Meteo<br>
-        {len(scores_df)} Governorates · 1981–2025<br>
+        {len(scores_df)} Governorates · 2003–2024<br>
         Refreshed: {datetime.now().strftime('%H:%M')}
         </div>""",
         unsafe_allow_html=True,
@@ -901,9 +901,9 @@ if "Home" in page:
       <div style="margin-top:18px;">
         <span class="siq-pill pill-gold">☀ 27 Governorates</span>
         <span class="siq-pill pill-sky">📡 NASA POWER</span>
-        <span class="siq-pill pill-gold">📅 44 Years</span>
+        <span class="siq-pill pill-gold">📅 22 Years</span>
         <span class="siq-pill pill-sky">🤖 AI Scoring</span>
-        <span class="siq-pill pill-green">15 Dashboards</span>
+        <span class="siq-pill pill-green">20 Dashboards</span>
       </div>
     </div>
     """, unsafe_allow_html=True)
@@ -1458,7 +1458,7 @@ elif "Rankings" in page:
 # ═══════════════════════  PAGE: POWER BI LIVE  ═══════════════════════════════
 # ──────────────────────────────────────────────────────────────────────────────
 elif "Power BI" in page:
-    PURL = "https://app.powerbi.com/reportEmbed?reportId=3e07ad1b-b490-49b6-a06e-5ebdca80c69a&autoAuth=true&ctid=a2c31985-cc3b-4e19-8fa2-59fa488f0c27&actionBarEnabled=true&reportCopilotInEmbed=true"
+    PURL = "https://app.powerbi.com/reportEmbed?reportId=7119e8ff-afea-46b3-96d1-a70d769c4d06&autoAuth=true&ctid=a2c31985-cc3b-4e19-8fa2-59fa488f0c27&actionBarEnabled=true&reportCopilotInEmbed=true"
     st.markdown('<div class="sec-title">📡 Power BI Live Service</div>', unsafe_allow_html=True)
     st.markdown('<div class="sec-ar">تقارير Power BI التفاعلية المباشرة — 15 لوحة مدمجة</div>',
                 unsafe_allow_html=True)
